@@ -1,15 +1,12 @@
 ﻿
+using Castle.DynamicProxy;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Wombat;
-using Wombat.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Castle.DynamicProxy;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Wombat.DependencyInjection
 {
@@ -66,6 +63,7 @@ namespace Wombat.DependencyInjection
             }
 
             if (assemblies == null) return;
+
             // 服务自动注册
             ScanComponent(serviceCollection, assemblies);
         }
