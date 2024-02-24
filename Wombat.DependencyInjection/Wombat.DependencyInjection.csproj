@@ -1,7 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>wombatwebcg</Authors>
+    <Company>wombatwebcg</Company>
+    <Copyright>wombatwebcg</Copyright>
+    <Description>依赖注入基础包</Description>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>dependencyInjection</PackageTags>
+    <RepositoryUrl>https://github.com/wombatwebcg/Wombat.DependencyInjection</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/wombatwebcg/Wombat.DependencyInjection</PackageProjectUrl>
   </PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Castle.Core" Version="5.1.1" />
