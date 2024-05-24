@@ -19,6 +19,9 @@ namespace Wombat.DependencyInjection
         /// </summary>
         public Type Instance { get; }
 
+
+        public string ServiceName { get; set; } = string.Empty;
+
         /// <summary>
         /// 作用域
         /// </summary>

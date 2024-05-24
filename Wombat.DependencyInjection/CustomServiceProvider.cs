@@ -52,6 +52,41 @@ namespace Wombat.DependencyInjection
             return _serviceProvider.GetRequiredService<T>();
         }
 
+        /// <summary>
+        /// 获取服务提供者
+        /// </summary>
+        /// <returns></returns>
+        public static object GetRequiredService(Type serviceType)
+        {
+            return _serviceProvider.GetRequiredService(serviceType);
+        }
+
+
+        /// <summary>
+        /// 获取服务提供者
+        /// </summary>
+        /// <returns></returns>
+        public static object GetServices(Type serviceType)
+        {
+            return _serviceProvider.GetService(serviceType);
+        }
+
+        /// <summary>
+        /// 获取服务提供者
+        /// </summary>
+        /// <returns></returns>
+        public static object GetServices(string serviceName)
+        {
+            if(DependencyInjectionServices.NamedServices.TryGetValue(serviceName,out Type type))
+            {
+                return GetServices(type);
+
+            }
+            else
+            {
+                return null;
+            }
+        }
 
 
         public static IConfiguration GetConfiguration()

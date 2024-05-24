@@ -9,7 +9,7 @@ using Wombat.DependencyInjection;
 namespace Wombat.DependencyInjectionTest
 {
 
-    [Component(Lifetime = ServiceLifetime.Transient)]
+    [Component(Lifetime = ServiceLifetime.Transient,ServiceName = nameof(Class2))]
     public class Class2 
     {
 

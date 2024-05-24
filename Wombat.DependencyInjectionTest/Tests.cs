@@ -19,6 +19,12 @@ namespace Wombat.DependencyInjectionTest
             services.AddAppSettings();
             services.AddServices();
             var serviceProvider = services.BuildServiceProvider();
+            serviceProvider.UseCustomServiceProvider();
+            var y1 = (Class2)CustomServiceProvider.GetServices(nameof(Class2));
+           var ssss = y1.Test1;
+            var y2 = (Class1)CustomServiceProvider.GetServices(nameof(Class1));
+           y2.HelloWorld();
+
             var sss = serviceProvider.GetRequiredService<Class2>();
             var ppp = sss.Test1;
             sss.HelloWorld();

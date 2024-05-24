@@ -8,7 +8,7 @@ using Wombat.DependencyInjection;
 
 namespace Wombat.DependencyInjectionTest
 {
-    [Component(Lifetime = ServiceLifetime.Scoped)]
+    [Component(Lifetime = ServiceLifetime.Scoped,ServiceName = nameof(Class1))]
 
     public class Class1:IClass,IClass1
     {

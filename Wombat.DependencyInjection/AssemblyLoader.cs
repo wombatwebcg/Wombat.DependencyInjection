@@ -23,10 +23,6 @@ namespace Wombat
                 List<Assembly> result = new List<Assembly>();
                 List<string> ignoreList = new List<string> {};
 
-                //IEnumerable<Assembly> source = from w in GetLoadedAssemblies()
-                //    .Where(w => !ignoreList.Any(s => (w.GetName().Name ?? "").Contains(s)))
-                //    .Where(w => !result.Any(s => (w.GetName().Name ?? "").Contains(s.GetName().Name ?? "")))
-                //                               select w;
                 IEnumerable<Assembly> source = from w in GetLoadedAssemblies()
                                                where !ignoreList.Any(s => (w.GetName().Name ?? "").Contains(s))
                                                where !result.Any(s => (w.GetName().Name ?? "").Contains(s.GetName().Name ?? ""))
