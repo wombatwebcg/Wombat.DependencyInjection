@@ -7,7 +7,7 @@ using System.Text;
 using System.Xml.Linq;
 using Wombat.Extensions.DataTypeExtensions;
 
-namespace Wombat
+namespace Wombat.DependencyInjection
 {
    public class AssemblyLoader
     {

@@ -66,7 +66,7 @@ namespace Wombat.DependencyInjection
         /// 获取服务提供者
         /// </summary>
         /// <returns></returns>
-        public static object GetServices(Type serviceType)
+        public static object GetService(Type serviceType)
         {
             return _serviceProvider.GetService(serviceType);
         }
@@ -75,11 +75,11 @@ namespace Wombat.DependencyInjection
         /// 获取服务提供者
         /// </summary>
         /// <returns></returns>
-        public static object GetServices(string serviceName)
+        public static object GetService(string serviceName)
         {
             if(DependencyInjectionServices.NamedServices.TryGetValue(serviceName,out Type type))
             {
-                return GetServices(type);
+                return GetService(type);
 
             }
             else
