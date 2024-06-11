@@ -96,8 +96,6 @@ namespace Wombat.DependencyInjection
 
             NamedServices.Clear();
             serviceCollection.AddTransient<IAsyncInterceptor, AOPInterceptor>();
-            try
-            {
                 foreach (var localServiceLifetime in Enum.GetValues(typeof(ServiceLifetime)))
                 {
                     var serviceLifetime = (ServiceLifetime)localServiceLifetime;
@@ -111,8 +109,11 @@ namespace Wombat.DependencyInjection
                                     && !t.IsAbstract)
                         .ToList();
 
-                    foreach (var aType in types)
+                foreach (var aType in types)
+                {
+                    try
                     {
+
                         var interfaces = assemblies
                             .Where(a => a != null)
                             .SelectMany(x => x?.GetTypes() ?? Array.Empty<Type>())
@@ -219,53 +220,62 @@ namespace Wombat.DependencyInjection
                         }
                         #endregion
                     }
+
+                    catch (Exception ex)
+                    {
+                        throw new ArgumentException($"{aType}Injection Exception.{ex.InnerException},{ex.StackTrace}");
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException($"Injection Exception.{ex.InnerException},{ex.StackTrace}");
             }
 
             void inject(ServiceLifetime serviceLifetime, Type type, Type typeInterface = null, string serviceName = null)
             {
-                switch (serviceLifetime)
-                {
-                    case ServiceLifetime.Singleton:
-                        serviceCollection.AddSingleton(type);
-                        break;
-                    case ServiceLifetime.Scoped:
-                        serviceCollection.AddScoped(type);
-                        break;
-                    case ServiceLifetime.Transient:
-                        serviceCollection.AddTransient(type);
-                        break;
-                }
-                if (typeInterface != null)
+                try
                 {
                     switch (serviceLifetime)
                     {
                         case ServiceLifetime.Singleton:
-                            serviceCollection.AddSingleton(typeInterface, type);
+                            serviceCollection.AddSingleton(type);
                             break;
                         case ServiceLifetime.Scoped:
-                            serviceCollection.AddScoped(typeInterface, type);
+                            serviceCollection.AddScoped(type);
                             break;
                         case ServiceLifetime.Transient:
-                            serviceCollection.AddTransient(typeInterface, type);
+                            serviceCollection.AddTransient(type);
                             break;
                     }
+                    if (typeInterface != null)
+                    {
+                        switch (serviceLifetime)
+                        {
+                            case ServiceLifetime.Singleton:
+                                serviceCollection.AddSingleton(typeInterface, type);
+                                break;
+                            case ServiceLifetime.Scoped:
+                                serviceCollection.AddScoped(typeInterface, type);
+                                break;
+                            case ServiceLifetime.Transient:
+                                serviceCollection.AddTransient(typeInterface, type);
+                                break;
+                        }
+                    }
+                    if (serviceName != null && !string.IsNullOrWhiteSpace(serviceName))
+                    {
+                        if (!NamedServices.TryGetValue(serviceName, out _))
+                        {
+                            NamedServices.Add(serviceName, type);
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"A service with the name '{serviceName}' is already registered.");
+                        }
+                    }
                 }
-                if (serviceName != null && !string.IsNullOrWhiteSpace(serviceName))
+                catch (Exception ex)
                 {
-                    if (!NamedServices.TryGetValue(serviceName, out _))
-                    {
-                        NamedServices.Add(serviceName, type);
-                    }
-                    else
-                    {
-                        throw new ArgumentException($"A service with the name '{serviceName}' is already registered.");
-                    }
+                    throw new ArgumentException($"Injection Exception.{serviceLifetime},{type},{typeInterface},{serviceName}");
                 }
+
             }
         }
 
