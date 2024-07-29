@@ -10,7 +10,7 @@
     <PackageTags>dependencyInjection</PackageTags>
     <RepositoryUrl>https://github.com/wombatwebcg/Wombat.DependencyInjection</RepositoryUrl>
     <PackageProjectUrl>https://github.com/wombatwebcg/Wombat.DependencyInjection</PackageProjectUrl>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
   </PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Castle.Core" Version="5.1.1" />
