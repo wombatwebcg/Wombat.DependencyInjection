@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
@@ -10,26 +8,19 @@ namespace Wombat.DependencyInjection
     public class AOPInterceptor : IAsyncInterceptor
     {
         private readonly IServiceProvider _serviceProvider;
+
         public AOPInterceptor(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
-
-
-        /// <summary>
-        /// 异步拦截方法。
-        /// </summary>
-        /// <param name="invocation">拦截上下文。</param>
+        // 异步无返回值的拦截
         public void InterceptAsynchronous(IInvocation invocation)
         {
             invocation.ReturnValue = InternalInterceptAsynchronous(invocation);
         }
 
-        /// <summary>
-        /// 内部异步拦截方法。
-        /// </summary>
-        /// <param name="invocation">拦截上下文。</param>
+        // 异步无返回值的内部处理
         private async Task InternalInterceptAsynchronous(IInvocation invocation)
         {
             var aopBaseAttribute = GetAOPBaseAttribute(invocation);
@@ -46,7 +37,10 @@ namespace Wombat.DependencyInjection
 
             try
             {
-                invocation.Proceed();
+                if (!aopContext.IsJumpOutInternalMethod)
+                {
+                    invocation.Proceed();
+                }
                 await AwaitTask(invocation.ReturnValue);
                 aopBaseAttribute.After(aopContext);
             }
@@ -56,30 +50,13 @@ namespace Wombat.DependencyInjection
             }
         }
 
-        private async Task AwaitTask(object task)
-        {
-            if (task is Task awaitableTask)
-            {
-                await awaitableTask;
-            }
-        }
-
-        /// <summary>
-        /// 异步拦截方法。
-        /// </summary>
-        /// <typeparam name="TResult">返回结果类型。</typeparam>
-        /// <param name="invocation">拦截上下文。</param>
+        // 异步有返回值的拦截
         public void InterceptAsynchronous<TResult>(IInvocation invocation)
         {
-
             invocation.ReturnValue = InternalInterceptAsynchronous<TResult>(invocation);
         }
 
-        /// <summary>
-        /// 内部异步拦截方法。
-        /// </summary>
-        /// <typeparam name="TResult">返回结果类型。</typeparam>
-        /// <param name="invocation">拦截上下文。</param>
+        // 异步有返回值的内部处理
         private async Task<TResult> InternalInterceptAsynchronous<TResult>(IInvocation invocation)
         {
             var aopBaseAttribute = GetAOPBaseAttribute(invocation);
@@ -93,14 +70,12 @@ namespace Wombat.DependencyInjection
             var aopContext = new AOPContext(invocation, _serviceProvider);
             aopBaseAttribute.Before<TResult>(aopContext);
 
-            if (invocation.ReturnValue != null)
-            {
-                return await AwaitTask((Task<TResult>)invocation.ReturnValue);
-            }
-
             try
             {
-                invocation.Proceed();
+                if (!aopContext.IsJumpOutInternalMethod)
+                {
+                    invocation.Proceed();
+                }
                 var result = await AwaitTask((Task<TResult>)invocation.ReturnValue);
                 aopBaseAttribute.After(aopContext, result);
                 return result;
@@ -113,18 +88,9 @@ namespace Wombat.DependencyInjection
             return default; // 根据实际情况返回默认值
         }
 
-        private async Task<TResult> AwaitTask<TResult>(Task<TResult> task)
-        {
-            return await task;
-        }
-
-        /// <summary>
-        /// 同步拦截方法。
-        /// </summary>
-        /// <param name="invocation">拦截上下文。</param>
+        // 同步拦截
         public void InterceptSynchronous(IInvocation invocation)
         {
-
             var aopBaseAttribute = GetAOPBaseAttribute(invocation);
 
             if (aopBaseAttribute == null)
@@ -134,20 +100,14 @@ namespace Wombat.DependencyInjection
             }
 
             var aopContext = new AOPContext(invocation, _serviceProvider);
-            // 执行调用之前的函数
             aopBaseAttribute.Before(aopContext);
 
-            #region 检查返回值有无 如果有了则不执行函数直接返回数据
-            var result = invocation.ReturnValue;
-            if (result != null)
-            {
-                aopBaseAttribute.After(aopContext);
-                return;
-            }
-            #endregion
             try
             {
-                invocation.Proceed();
+                if (!aopContext.IsJumpOutInternalMethod)
+                {
+                    invocation.Proceed();
+                }
                 aopBaseAttribute.After(aopContext);
             }
             catch (Exception exception)
@@ -156,6 +116,22 @@ namespace Wombat.DependencyInjection
             }
         }
 
+        // 处理Task的等待
+        private async Task AwaitTask(object task)
+        {
+            if (task is Task awaitableTask)
+            {
+                await awaitableTask;
+            }
+        }
+
+        // 处理Task<TResult>的等待
+        private async Task<TResult> AwaitTask<TResult>(Task<TResult> task)
+        {
+            return await task;
+        }
+
+        // 处理异常
         private void HandleException(AOPBaseAttribute aopBaseAttribute, AOPContext aopContext, Exception exception)
         {
             if (aopBaseAttribute.ExceptionEvent != null)
@@ -164,17 +140,13 @@ namespace Wombat.DependencyInjection
             }
             else
             {
-                throw exception; // 或者其他异常处理
+                throw exception;
             }
         }
-        /// <summary>
-        /// 获取AOP基础特性。
-        /// </summary>
-        /// <param name="invocation">拦截上下文。</param>
-        /// <returns>AOP基础特性。</returns>
+
+        // 获取AOP基础特性
         private AOPBaseAttribute GetAOPBaseAttribute(IInvocation invocation)
         {
-
             var aopBaseAttribute = invocation.Method.GetCustomAttribute<AOPBaseAttribute>();
 
             // 从类上获取标记
@@ -183,13 +155,11 @@ namespace Wombat.DependencyInjection
                 aopBaseAttribute = invocation.MethodInvocationTarget.GetCustomAttribute<AOPBaseAttribute>();
             }
 
-            var name = invocation.MethodInvocationTarget.Name;
             // 从属性上获取标记
-            if (aopBaseAttribute == null && (name.StartsWith("get_") || name.StartsWith("set_")))
+            if (aopBaseAttribute == null && invocation.MethodInvocationTarget.Name.StartsWith("get_") || invocation.MethodInvocationTarget.Name.StartsWith("set_"))
             {
-                name = name.Replace("get_", "");
-                name = name.Replace("Set_", "");
-                var propertyInfo = invocation.Method.DeclaringType.GetProperty(name);
+                var propertyName = invocation.MethodInvocationTarget.Name.Substring(4);
+                var propertyInfo = invocation.Method.DeclaringType.GetProperty(propertyName);
                 if (propertyInfo != null)
                 {
                     aopBaseAttribute = propertyInfo.GetCustomAttribute<AOPBaseAttribute>();
@@ -197,7 +167,6 @@ namespace Wombat.DependencyInjection
             }
 
             return aopBaseAttribute;
-
         }
     }
 }

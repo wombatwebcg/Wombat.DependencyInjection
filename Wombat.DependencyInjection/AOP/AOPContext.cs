@@ -15,5 +15,8 @@ namespace Wombat.DependencyInjection
         public IServiceProvider ServiceProvider { get; }
 
         public IInvocation Invocation => _invocation;
+
+        public bool IsJumpOutInternalMethod { get; set; } = false;
+
     }
 }

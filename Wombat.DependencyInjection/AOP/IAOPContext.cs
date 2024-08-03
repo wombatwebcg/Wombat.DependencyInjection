@@ -9,5 +9,8 @@ namespace Wombat.DependencyInjection
         IServiceProvider ServiceProvider { get; }
 
         IInvocation Invocation { get; }
+
+        bool IsJumpOutInternalMethod { get; set; }
+
     }
 }

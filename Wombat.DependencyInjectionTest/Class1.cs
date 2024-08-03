@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,9 +9,9 @@ using Wombat.DependencyInjection;
 
 namespace Wombat.DependencyInjectionTest
 {
-    [Component(Lifetime = ServiceLifetime.Scoped,ServiceName = nameof(Class1))]
+    [Component(Lifetime = ServiceLifetime.Transient,ServiceName = nameof(Class1))]
 
-    public class Class1:IClass,IClass1
+    public class Class1
     {
 
         private readonly IServiceProvider _serviceProvider;
@@ -20,16 +21,23 @@ namespace Wombat.DependencyInjectionTest
             _serviceProvider = serviceProvider;
         }
 
+        [AppSettings("Test:Value1")]
+        public virtual double Value1 { get; }
+
+
+        [AppSettings("Test:Name")]
+        public virtual string Test1 { get; }
 
         [Transactional]
-        public void HelloWorld()
+        public virtual void HelloWorld()
         {
-            Console.WriteLine("HelloWorld11111");
+            Debug.WriteLine("class1拦截前内部1");
         }
 
-        public void HelloWorld2()
+        [Transactional]
+        public virtual void HelloWorld2()
         {
-            Console.WriteLine("HelloWorld22222222");
+            Debug.WriteLine("class1拦截前内部1");
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,11 +21,15 @@ namespace Wombat.DependencyInjectionTest
         /// <param name="dbContextTypes">数据上下文</param>
         public TransactionalAttribute()
         {
+
         }
 
         public override void Before(IAOPContext context)
         {
-            Console.WriteLine(11111);
+            Debug.WriteLine("拦截前执行方法");
+
+            context.Invocation.ReturnValue = "123";
+            return;
             //context.Invocation.ReturnValue = 100;
             //Console.WriteLine(111112);
 
@@ -32,8 +37,9 @@ namespace Wombat.DependencyInjectionTest
         }
         public override void After(IAOPContext context)
         {
-            Console.WriteLine(context.Invocation.ReturnValue);
-            Console.WriteLine(22222);
+            var ssss = context.Invocation.ReturnValue;
+            Debug.WriteLine(context.Invocation.ReturnValue);
+            Debug.WriteLine("拦截后执行方法");
         }
 
 
