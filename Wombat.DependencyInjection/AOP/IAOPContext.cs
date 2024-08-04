@@ -10,7 +10,7 @@ namespace Wombat.DependencyInjection
 
         IInvocation Invocation { get; }
 
-        bool IsJumpOutInternalMethod { get; set; }
 
+        void JumpOutInternalMethod();
     }
 }

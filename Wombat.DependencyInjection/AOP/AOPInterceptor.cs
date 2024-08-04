@@ -37,7 +37,7 @@ namespace Wombat.DependencyInjection
 
             try
             {
-                if (!aopContext.IsJumpOutInternalMethod)
+                if (!aopContext._isJumpOutInternalMethod)
                 {
                     invocation.Proceed();
                 }
@@ -72,7 +72,7 @@ namespace Wombat.DependencyInjection
 
             try
             {
-                if (!aopContext.IsJumpOutInternalMethod)
+                if (!aopContext._isJumpOutInternalMethod)
                 {
                     invocation.Proceed();
                 }
@@ -104,7 +104,7 @@ namespace Wombat.DependencyInjection
 
             try
             {
-                if (!aopContext.IsJumpOutInternalMethod)
+                if (!aopContext._isJumpOutInternalMethod)
                 {
                     invocation.Proceed();
                 }

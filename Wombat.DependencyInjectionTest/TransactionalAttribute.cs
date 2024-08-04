@@ -29,6 +29,7 @@ namespace Wombat.DependencyInjectionTest
             Debug.WriteLine("拦截前执行方法");
 
             context.Invocation.ReturnValue = "123";
+            context.JumpOutInternalMethod();
             return;
             //context.Invocation.ReturnValue = 100;
             //Console.WriteLine(111112);

@@ -16,7 +16,10 @@ namespace Wombat.DependencyInjection
 
         public IInvocation Invocation => _invocation;
 
-        public bool IsJumpOutInternalMethod { get; set; } = false;
-
+        internal bool _isJumpOutInternalMethod = false;
+        public virtual void JumpOutInternalMethod()
+        {
+            _isJumpOutInternalMethod = true;
+        }
     }
 }
